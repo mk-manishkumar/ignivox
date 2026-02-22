@@ -1,15 +1,19 @@
-import FeaturedProducts from "@/components/landing-page/featured-products"
-import HeroSection from "@/components/landing-page/hero-section"
-import RecentlyLaunchedProducts from "@/components/landing-page/recently-launched-products"
+import FeaturedProducts from "@/components/landing-page/featured-products";
+import HeroSection from "@/components/landing-page/hero-section";
+import RecentlyLaunchedProducts from "@/components/landing-page/recently-launched-products";
+import ProductSkeleton from "@/components/products/product-skeleton";
+import { Suspense } from "react";
 
-const page = () => {
+export default function Home() {
   return (
     <div>
       <HeroSection />
-      <FeaturedProducts/>
-      <RecentlyLaunchedProducts/>
-    </div>
-  )
-}
 
-export default page
+      <FeaturedProducts />
+
+      <Suspense fallback={<ProductSkeleton />}>
+        <RecentlyLaunchedProducts />
+      </Suspense>
+    </div>
+  );
+}
