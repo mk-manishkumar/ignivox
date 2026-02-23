@@ -4,7 +4,6 @@ import { ArrowRightIcon, EyeIcon, RocketIcon, SparklesIcon, UsersIcon } from "lu
 import Link from "next/link";
 import StatsCard from "./stats-card";
 
-// live badge component
 const LiveBadge = () => {
   return (
     <Badge variant="outline" className="px-4 py-2 mb-8 text-sm backdrop-blur-sm">
@@ -19,7 +18,6 @@ const LiveBadge = () => {
   );
 };
 
-// stats data
 const statsData = [
   {
     icon: RocketIcon,
@@ -39,7 +37,6 @@ const statsData = [
   },
 ];
 
-// hero section
 export default function HeroSection() {
   return (
     <section className="relative overflow-hidden bg-linear-to-b from-background via-background to-muted/20">
@@ -68,7 +65,6 @@ export default function HeroSection() {
             </Button>
           </div>
 
-          {/* stats card */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-12 max-w-2xl w-full">
             {statsData.map((stat) => (
               <StatsCard key={stat.label} {...stat} />

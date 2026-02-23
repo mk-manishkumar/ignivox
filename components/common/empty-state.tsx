@@ -1,12 +1,6 @@
 import { LucideIcon } from "lucide-react";
 
-export default function EmptyState({
-  message,
-  icon: Icon,
-}: {
-  message: string;
-  icon?: LucideIcon;
-}) {
+export default function EmptyState({ message, icon: Icon }: { message: string; icon?: LucideIcon; }) {
   return (
     <div className="empty-state">
       {Icon && (
