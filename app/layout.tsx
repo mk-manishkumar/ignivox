@@ -12,17 +12,13 @@ export const metadata: Metadata = {
   description: "Where makers ignite & voices amplify",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children}: Readonly<{ children: React.ReactNode; }>) {
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className={`${outfit.className} antialiased`}>
+        <body className={`${outfit.className} antialiased min-h-screen flex flex-col`}>
           <Header />
-          {children}
+          <main className="grow">{children}</main>
           <Footer />
         </body>
       </html>

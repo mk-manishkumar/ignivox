@@ -1,13 +1,18 @@
 "use client";
-import { CheckCircleIcon, XCircleIcon } from "lucide-react";
+import { CheckCircleIcon, Trash2Icon, XCircleIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { approveProductAction, rejectProductAction } from "@/lib/admin/admin-actions";
+import { approveProductAction, rejectProductAction, deleteProductAction } from "@/lib/admin/admin-actions";
 import { ProductType } from "@/types";
 
 export default function AdminActions({ status, productId }: { status: string; productId: ProductType["id"]; }) {
 
   const handleApprove = async () => await approveProductAction(productId);
   const handleReject = async () => await rejectProductAction(productId);
+  const handleDelete = async () => {
+    if (window.confirm("Are you sure you want to delete this product? This cannot be undone.")) {
+      await deleteProductAction(productId);
+    }
+  };
 
   return (
     <div className="space-y-2">
@@ -24,6 +29,10 @@ export default function AdminActions({ status, productId }: { status: string; pr
           </Button>
         </div>
       )}
+      <Button variant="outline" className="hover:cursor-pointer text-destructive hover:text-destructive" onClick={handleDelete}>
+        <Trash2Icon className="size-4" />
+        Delete
+      </Button>
     </div>
   );
 }

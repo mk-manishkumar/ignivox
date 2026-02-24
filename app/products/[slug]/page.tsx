@@ -1,10 +1,9 @@
-"use cache";
-
 import SectionHeader from "@/components/common/section-header";
 import VotingButtons from "@/components/products/voting-buttons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getFeaturedProducts, getProductBySlug } from "@/lib/products/product-select";
+import { getUserVotedProductIds } from "@/lib/products/vote-queries";
 import { ArrowLeftIcon, CalendarIcon, ExternalLinkIcon, StarIcon, UserIcon } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -21,11 +20,12 @@ export default async function Product({
 }) {
   const { slug } = await params;
 
-  const product = await getProductBySlug(slug);
+  const [product, votedProductIds] = await Promise.all([ getProductBySlug(slug), getUserVotedProductIds(), ]);
 
   if (!product) notFound();
 
   const { name, description, websiteUrl, tags, voteCount, tagline } = product;
+  const hasVoted = votedProductIds.has(product.id);
 
   return (
     <div className="py-16">
@@ -81,7 +81,7 @@ export default async function Product({
                   <p className="text-sm text-muted-foreground mb-2">
                     Support this product
                   </p>
-                  <VotingButtons productId={product.id} voteCount={voteCount} />
+                  <VotingButtons productId={product.id} voteCount={voteCount} hasVoted={hasVoted} />
                 </div>
                 {voteCount > 100 && (
                   <div className="pt-6 border-t">

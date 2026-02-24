@@ -6,7 +6,8 @@ import ProductCard from "@/components/products/product-card";
 import { ProductType } from "@/types";
 import { useMemo, useState } from "react";
 
-export default function ProductExplorer({ products }: { products: ProductType[] }) {
+export default function ProductExplorer({ products, votedProductIds }: { products: ProductType[]; votedProductIds?: number[] }) {
+  const votedSet = useMemo(() => new Set(votedProductIds ?? []), [votedProductIds]);
   const [sortBy, setSortBy] = useState<"trending" | "recent" | "newest">("trending");
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -62,7 +63,7 @@ export default function ProductExplorer({ products }: { products: ProductType[] 
 
       <div className="grid-wrapper">
         {filteredProducts.map((product) => (
-          <ProductCard key={product.id} product={product} />
+          <ProductCard key={product.id} product={product} votedProductIds={votedSet} />
         ))}
       </div>
     </div>

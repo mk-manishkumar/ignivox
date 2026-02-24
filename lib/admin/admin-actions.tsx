@@ -52,3 +52,22 @@ export const rejectProductAction = async (productId: ProductType["id"]) => {
     };
   }
 };
+
+export const deleteProductAction = async (productId: ProductType["id"]) => {
+  try {
+    await db.delete(products).where(eq(products.id, productId));
+
+    revalidatePath("/admin");
+
+    return {
+      success: true,
+      message: "Product deleted successfully",
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      success: false,
+      message: "Failed to delete product",
+    };
+  }
+};

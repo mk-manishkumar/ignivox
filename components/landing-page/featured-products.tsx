@@ -1,13 +1,14 @@
-"use cache";
 import SectionHeader from "@/components/common/section-header";
 import { ArrowUpRightIcon, StarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import ProductCard from "@/components/products/product-card";
 import { getFeaturedProducts } from "@/lib/products/product-select";
+import { getUserVotedProductIds } from "@/lib/products/vote-queries";
 
 export default async function FeaturedProducts() {
-  const featuredProducts = await getFeaturedProducts();
+  const [featuredProducts, votedProductIds] = await Promise.all([ getFeaturedProducts(), getUserVotedProductIds(), ]);
+  
   return (
     <section className="py-20 bg-muted/20">
       <div className="wrapper">
@@ -21,7 +22,7 @@ export default async function FeaturedProducts() {
         </div>
         <div className="grid-wrapper">
           {featuredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard key={product.id} product={product} votedProductIds={votedProductIds} />
           ))}
         </div>
       </div>

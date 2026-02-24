@@ -1,10 +1,10 @@
 "use server";
 
 import { db } from "@/db";
-import { products } from "@/db/schema";
+import { products, votes } from "@/db/schema";
 import { FormState } from "@/types";
 import { auth, currentUser } from "@clerk/nextjs/server";
-import { eq, sql } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import z from "zod";
 import { productSchema } from "./product-validations";
@@ -89,29 +89,46 @@ export const addProductAction = async (prevState: FormState, formData: FormData)
 
 export const upvoteProductAction = async (productId: number) => {
   try {
-    const { userId, orgId } = await auth();
+    const { userId } = await auth();
 
     if (!userId) {
-      console.log("User not signed in");
       return {
         success: false,
-        message: "You must be signed in to submit a product",
+        message: "You must be signed in to vote",
       };
     }
 
-    if (!orgId) {
-      console.log("User not a member of an organization");
+    // Check if user already voted
+    const existingVote = await db
+      .select()
+      .from(votes)
+      .where(and(eq(votes.userId, userId), eq(votes.productId, productId)))
+      .limit(1);
+
+    if (existingVote.length > 0) {
+      // Toggle off: remove vote and decrement count
+      await db.delete(votes).where(and(eq(votes.userId, userId), eq(votes.productId, productId)));
+
+      await db
+        .update(products)
+        .set({ voteCount: sql`GREATEST(0, vote_count - 1)` })
+        .where(eq(products.id, productId));
+
+      revalidatePath("/");
+
       return {
-        success: false,
-        message: "You must be a member of an organization to submit a product",
+        success: true,
+        message: "Vote removed",
+        voted: false,
       };
     }
+
+    // Insert vote and increment count
+    await db.insert(votes).values({ userId, productId });
 
     await db
       .update(products)
-      .set({
-        voteCount: sql`GREATEST(0, vote_count + 1)`,
-      })
+      .set({ voteCount: sql`vote_count + 1` })
       .where(eq(products.id, productId));
 
     revalidatePath("/");
@@ -119,56 +136,61 @@ export const upvoteProductAction = async (productId: number) => {
     return {
       success: true,
       message: "Product upvoted successfully",
+      voted: true,
     };
   } catch (error) {
     console.error(error);
     return {
       success: false,
       message: "Failed to upvote product",
-      voteCount: 0,
     };
   }
 };
 
 export const downvoteProductAction = async (productId: number) => {
   try {
-    const { userId, orgId } = await auth();
+    const { userId } = await auth();
 
     if (!userId) {
-      console.log("User not signed in");
       return {
         success: false,
-        message: "You must be signed in to submit a product",
+        message: "You must be signed in to vote",
       };
     }
 
-    if (!orgId) {
-      console.log("User not a member of an organization");
+    // Check if user has voted
+    const existingVote = await db
+      .select()
+      .from(votes)
+      .where(and(eq(votes.userId, userId), eq(votes.productId, productId)))
+      .limit(1);
+
+    if (existingVote.length === 0) {
       return {
         success: false,
-        message: "You must be a member of an organization to submit a product",
+        message: "You haven't voted on this product",
       };
     }
+
+    // Remove vote and decrement count
+    await db.delete(votes).where(and(eq(votes.userId, userId), eq(votes.productId, productId)));
 
     await db
       .update(products)
-      .set({
-        voteCount: sql`GREATEST(0, vote_count - 1)`,
-      })
+      .set({ voteCount: sql`GREATEST(0, vote_count - 1)` })
       .where(eq(products.id, productId));
 
     revalidatePath("/");
 
     return {
       success: true,
-      message: "Product downvoted successfully",
+      message: "Vote removed",
     };
   } catch (error) {
     console.error(error);
     return {
       success: false,
-      message: "Failed to downvote product",
-      voteCount: 0,
+      message: "Failed to remove vote",
     };
   }
 };

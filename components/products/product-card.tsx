@@ -1,12 +1,12 @@
-import {Card, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
+import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { StarIcon } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
 import VotingButtons from "./voting-buttons";
 import { ProductType } from "@/types";
 
-export default function ProductCard({ product }: { product: ProductType }) {
-  const hasVoted = false;
+export default function ProductCard({ product, votedProductIds }: { product: ProductType; votedProductIds?: Set<number> }) {
+  const hasVoted = votedProductIds?.has(product.id) ?? false;
   return (
     <Link href={`/products/${product.slug}`}>
       <Card className="group card-hover hover:bg-primary-foreground/10 border-solid border-gray-400 min-h-[200px]">
