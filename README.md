@@ -18,6 +18,12 @@ A community-driven product discovery platform, like Product Hunt, where makers s
 
 ---
 
+## 🌐 Live Demo
+
+[![Live Demo](https://img.shields.io/badge/Live_Demo-ignivox.vercel.app-brightgreen?style=for-the-badge&logo=vercel)](https://ignivox.vercel.app)
+
+---
+
 ## ✨ Features
 
 - **🚀 Product Submissions** — Makers submit products with name, tagline, description, website, and tags via an Organization-scoped flow
@@ -140,7 +146,7 @@ ignivox/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/ignivox.git
+git clone https://github.com/mk-manishkumar/ignivox.git
 cd ignivox
 ```
 
